@@ -4,8 +4,12 @@ FILE(GLOB SOURCE "*.cpp")
 LIST(REMOVE_ITEM SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/Main.cpp)
 LIST(REMOVE_ITEM SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
 
-ADD_COMPILE_OPTIONS("-Wall")
-ADD_COMPILE_OPTIONS("-Werror")
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    add_compile_options(-Wall -Werror)
+elseif (MSVC)
+    add_compile_options(/W4)
+endif()
+
 ADD_LIBRARY(training ${SOURCE})
 
 TARGET_INCLUDE_DIRECTORIES(training PUBLIC "${INCLUDE}")
