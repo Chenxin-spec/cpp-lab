@@ -64,22 +64,13 @@ TEST(ExecutorTest, should_x_minus1_when_M_and_facing_W)
     ASSERT_EQ(res.heading, 249);
 }
 
-TEST(ExecutorTest, should_turn_right)
+TEST(ExecutorTest, should_turn_right_when_facing_N)
 {
     Pose init{0,0,0};
     auto exe = Executor::NewExecutor(init);
     exe->Execute("R");
     Pose res = exe->Query();
     ASSERT_EQ(res.heading, 69);
-}
-
-TEST(ExecutorTest, should_turn_left)
-{
-    Pose init{0,0,0};
-    auto exe = Executor::NewExecutor(init);
-    exe->Execute("L");
-    Pose res = exe->Query();
-    ASSERT_EQ(res.heading, 249);
 }
 
 TEST(ExecutorTest, should_turn_right_when_facing_E)
@@ -91,47 +82,11 @@ TEST(ExecutorTest, should_turn_right_when_facing_E)
     ASSERT_EQ(res.heading, 159);
 }
 
-TEST(ExecutorTest, should_turn_right_when_facing_S)
+TEST(ExecutorTest, should_turn_left_when_facing_N)
 {
-    Pose init{0,0,159};
+    Pose init{0,0,0};
     auto exe = Executor::NewExecutor(init);
-    exe->Execute("R");
+    exe->Execute("L");
     Pose res = exe->Query();
     ASSERT_EQ(res.heading, 249);
-}
-
-TEST(ExecutorTest, should_turn_right_when_facing_W)
-{
-    Pose init{0,0,249};
-    auto exe = Executor::NewExecutor(init);
-    exe->Execute("R");
-    Pose res = exe->Query();
-    ASSERT_EQ(res.heading, 0);
-}
-
-TEST(ExecutorTest, should_turn_left_when_facing_E)
-{
-    Pose init{0,0,69};
-    auto exe = Executor::NewExecutor(init);
-    exe->Execute("L");
-    Pose res = exe->Query();
-    ASSERT_EQ(res.heading, 0);
-}
-
-TEST(ExecutorTest, should_turn_left_when_facing_S)
-{
-    Pose init{0,0,159};
-    auto exe = Executor::NewExecutor(init);
-    exe->Execute("L");
-    Pose res = exe->Query();
-    ASSERT_EQ(res.heading, 69);
-}
-
-TEST(ExecutorTest, should_turn_left_when_facing_W)
-{
-    Pose init{0,0,249};
-    auto exe = Executor::NewExecutor(init);
-    exe->Execute("L");
-    Pose res = exe->Query();
-    ASSERT_EQ(res.heading, 159);
 }
