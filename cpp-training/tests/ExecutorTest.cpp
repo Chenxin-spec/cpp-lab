@@ -82,6 +82,16 @@ TEST(ExecutorTest, should_turn_right_when_facing_E)
     ASSERT_EQ(res.heading, 159);
 }
 
+TEST(ExecutorTest, should_turn_right_when_facing_S)
+{
+    Pose init{0,0,159};
+    auto exe = Executor::NewExecutor(init);
+    exe->Execute("R");
+    Pose res = exe->Query();
+    ASSERT_EQ(res.heading, 249);
+}
+
+
 TEST(ExecutorTest, should_turn_left_when_facing_N)
 {
     Pose init{0,0,0};
