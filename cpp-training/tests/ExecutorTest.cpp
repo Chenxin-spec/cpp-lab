@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "Executor.hpp"
+#include "PoseEq.hpp"
 
 TEST(ExecutorTest, should_return_init_pose_when_without_command)
 {
