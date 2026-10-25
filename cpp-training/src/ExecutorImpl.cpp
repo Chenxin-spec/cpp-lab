@@ -7,7 +7,6 @@ ExecutorImpl::ExecutorImpl(const Pose& pose) noexcept : pose(pose)
 {
 }
 
-// ===== 14页：把原来的大 if-else 抽成三个成员函数 =====
 void ExecutorImpl::Move() noexcept
 {
     if (pose.heading == 0)          // N
@@ -44,7 +43,16 @@ void ExecutorImpl::TurnRight() noexcept
     else if (pose.heading == 249)   pose.heading = 0;     // W -> N
 }
 
-// ===== Execute 改为按字符遍历（支持多指令序列）=====
+void ExecutorImpl::Fast() noexcept
+{
+    fast = !fast;
+}
+
+bool ExecutorImpl::IsFast() const noexcept
+{
+    return fast;
+}
+
 void ExecutorImpl::Execute(const std::string& commands) noexcept
 {
     for (const char cmd : commands)
@@ -62,6 +70,10 @@ void ExecutorImpl::Execute(const std::string& commands) noexcept
         {
             cmder = std::make_unique<TurnRightCommand>();
         }
+        else if (cmd == 'F')
+        {
+            cmder = std::make_unique<FastCommand>();
+        }
 
         if (cmder)
         {
@@ -76,7 +88,7 @@ Pose ExecutorImpl::Query() const noexcept
 }
 } // namespace adas
 
-// 工厂函数保持不变
+// 工厂函数
 std::unique_ptr<Executor> Executor::NewExecutor(const Pose& init_pose)
 {
     return std::make_unique<adas::ExecutorImpl>(init_pose);
@@ -87,6 +99,6 @@ std::unique_ptr<Executor> Executor::NewExecutor()
     Pose defaultPose{};
     defaultPose.x = 0.0;
     defaultPose.y = 0.0;
-    defaultPose.heading = 78;   // ← 这里必须是 0（N）
+    defaultPose.heading = 78;
     return std::make_unique<adas::ExecutorImpl>(defaultPose);
 }
