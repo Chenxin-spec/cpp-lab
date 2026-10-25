@@ -49,17 +49,23 @@ void ExecutorImpl::Execute(const std::string& commands) noexcept
 {
     for (const char cmd : commands)
     {
+        std::unique_ptr<ICommand> cmder;
         if (cmd == 'M')
         {
-            Move();
+            cmder = std::make_unique<MoveCommand>();
         }
         else if (cmd == 'L')
         {
-            TurnLeft();
+            cmder = std::make_unique<TurnLeftCommand>();
         }
         else if (cmd == 'R')
         {
-            TurnRight();
+            cmder = std::make_unique<TurnRightCommand>();
+        }
+
+        if (cmder)
+        {
+            cmder->DoOperate(*this);
         }
     }
 }
