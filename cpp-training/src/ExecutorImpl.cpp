@@ -1,6 +1,7 @@
 #include "ExecutorImpl.hpp"
 #include "Command.hpp"
 #include <unordered_map>
+#include <functional>
 
 namespace adas
 {
@@ -10,22 +11,20 @@ ExecutorImpl::ExecutorImpl(const Pose& pose) noexcept : poseHandler(pose)
 
 void ExecutorImpl::Execute(const std::string& commands) noexcept
 {
-    // 表驱动
-    static const std::unordered_map<char, std::unique_ptr<ICommand>> cmderMap = []() {
-        std::unordered_map<char, std::unique_ptr<ICommand>> map;
-        map.emplace('M', std::make_unique<MoveCommand>());
-        map.emplace('L', std::make_unique<TurnLeftCommand>());
-        map.emplace('R', std::make_unique<TurnRightCommand>());
-        map.emplace('F', std::make_unique<FastCommand>());
-        return map;
-    }();
+    // 函数式 + 表驱动
+    static const std::unordered_map<char, std::function<void(PoseHandler&)>> cmderMap = {
+        {'M', MoveCommand{}},
+        {'L', TurnLeftCommand{}},
+        {'R', TurnRightCommand{}},
+        {'F', FastCommand{}}
+    };
 
     for (const auto cmd : commands)
     {
         const auto it = cmderMap.find(cmd);
         if (it != cmderMap.end())
         {
-            it->second->DoOperate(poseHandler);
+            it->second(poseHandler);   // 直接调用
         }
     }
 }
