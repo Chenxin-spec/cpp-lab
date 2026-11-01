@@ -10,61 +10,52 @@ PoseHandler::PoseHandler(const Pose& pose) noexcept : pose(pose)
 
 void PoseHandler::Move() noexcept
 {
-    if (pose.heading == 69)        // E
+    int dx = 0;
+    int dy = 0;
+
+    if (pose.heading == 69)       // E
+        dx = 1;
+    else if (pose.heading == 249) // W
+        dx = -1;
+    else if (pose.heading == 0)   // N
+        dy = 1;
+    else if (pose.heading == 159) // S
+        dy = -1;
+
+    // 倒车时方向取反
+    if (IsReverse())
     {
-        ++pose.x;
+        dx = -dx;
+        dy = -dy;
     }
-    else if (pose.heading == 249)  // W
-    {
-        --pose.x;
-    }
-    else if (pose.heading == 0)    // N
-    {
-        ++pose.y;
-    }
-    else if (pose.heading == 159)  // S
-    {
-        --pose.y;
-    }
+
+    pose.x += dx;
+    pose.y += dy;
 }
 
 void PoseHandler::TurnLeft() noexcept
 {
-    if (pose.heading == 69)        // E → N
+    if (IsReverse())
     {
-        pose.heading = 0;
+        // 倒车时 L 变成原来的 R
+        TurnRightImpl();
     }
-    else if (pose.heading == 0)    // N → W
+    else
     {
-        pose.heading = 249;
-    }
-    else if (pose.heading == 249)  // W → S
-    {
-        pose.heading = 159;
-    }
-    else if (pose.heading == 159)  // S → E
-    {
-        pose.heading = 69;
+        TurnLeftImpl();
     }
 }
 
 void PoseHandler::TurnRight() noexcept
 {
-    if (pose.heading == 69)        // E → S
+    if (IsReverse())
     {
-        pose.heading = 159;
+        // 倒车时 R 变成原来的 L
+        TurnLeftImpl();
     }
-    else if (pose.heading == 159)  // S → W
+    else
     {
-        pose.heading = 249;
-    }
-    else if (pose.heading == 249)  // W → N
-    {
-        pose.heading = 0;
-    }
-    else if (pose.heading == 0)    // N → E
-    {
-        pose.heading = 69;
+        TurnRightImpl();
     }
 }
 
@@ -81,6 +72,41 @@ bool PoseHandler::IsFast() const noexcept
 Pose PoseHandler::Query() const noexcept
 {
     return pose;
+}
+
+void PoseHandler::Reverse() noexcept
+{
+    reverse = !reverse;
+}
+
+bool PoseHandler::IsReverse() const noexcept
+{
+    return reverse;
+}
+
+// PoseHandler.cpp
+void PoseHandler::TurnLeftImpl() noexcept
+{
+    if (pose.heading == 69)        // E → N
+        pose.heading = 0;
+    else if (pose.heading == 0)    // N → W
+        pose.heading = 249;
+    else if (pose.heading == 249)  // W → S
+        pose.heading = 159;
+    else if (pose.heading == 159)  // S → E
+        pose.heading = 69;
+}
+
+void PoseHandler::TurnRightImpl() noexcept
+{
+    if (pose.heading == 69)        // E → S
+        pose.heading = 159;
+    else if (pose.heading == 159)  // S → W
+        pose.heading = 249;
+    else if (pose.heading == 249)  // W → N
+        pose.heading = 0;
+    else if (pose.heading == 0)    // N → E
+        pose.heading = 69;
 }
 
 } // namespace adas

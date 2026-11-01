@@ -20,10 +20,15 @@ public:
     void Fast() noexcept;
     bool IsFast() const noexcept;
     Pose Query() const noexcept;
-
+    void Reverse() noexcept;
+    bool IsReverse() const noexcept;
 private:
     Pose pose;
     bool fast{false};
+    bool reverse{false};
+    // PoseHandler.hpp 的 private 区域增加
+    void TurnLeftImpl() noexcept;
+    void TurnRightImpl() noexcept;
 };
 
 } // namespace adas
