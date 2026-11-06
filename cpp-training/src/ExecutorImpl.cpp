@@ -2,6 +2,9 @@
 #include "Command.hpp"
 #include <unordered_map>
 #include <functional>
+#include "CmderFactory.hpp"
+#include "Singleton.hpp"
+#include <algorithm>
 
 namespace adas
 {
@@ -11,27 +14,12 @@ ExecutorImpl::ExecutorImpl(const Pose& pose) noexcept : poseHandler(pose)
 
 void ExecutorImpl::Execute(const std::string& commands) noexcept
 {
-    // 函数式 + 表驱动
-    static const std::unordered_map<char, std::function<void(PoseHandler&)>> cmderMap = {
-        {'M', MoveCommand{}},
-        {'L', TurnLeftCommand{}},
-        {'R', TurnRightCommand{}},
-        {'F', FastCommand{}},
-        {'M', MoveCommand{}},
-        {'L', TurnLeftCommand{}},
-        {'R', TurnRightCommand{}},
-        {'F', FastCommand{}},
-        {'B', ReverseCommand{}}   // 新增
-    };
+    const auto cmders = Singleton<CmderFactory>::Instance().GetCmders(commands);
 
-    for (const auto cmd : commands)
-    {
-        const auto it = cmderMap.find(cmd);
-        if (it != cmderMap.end())
-        {
-            it->second(poseHandler);   // 直接调用
-        }
-    }
+    std::for_each(cmders.begin(), cmders.end(),
+                  [this](const Cmder& cmder) noexcept {
+                      cmder(poseHandler);
+                  });
 }
 
 Pose ExecutorImpl::Query() const noexcept
