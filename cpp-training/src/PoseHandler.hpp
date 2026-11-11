@@ -24,13 +24,13 @@ public:
     bool IsReverse() const noexcept;
     void Forward() noexcept;
     void Backward() noexcept;
+    void TurnLeftImpl() noexcept;
+    void TurnRightImpl() noexcept;
 private:
     Pose pose;
     bool fast{false};
     bool reverse{false};
     // PoseHandler.hpp 的 private 区域增加
-    void TurnLeftImpl() noexcept;
-    void TurnRightImpl() noexcept;
 };
 
 } // namespace adas
