@@ -107,4 +107,35 @@ public:
     }
 };
 
+class TurnRoundCommand final
+{
+public:
+    ActionGroup operator()(PoseHandler& poseHandler) const noexcept
+    {
+        // 倒车状态下忽略 TR
+        if (poseHandler.IsReverse())
+        {
+            return ActionGroup{};
+        }
+
+        if (poseHandler.IsFast())
+        {
+            // 加速：前进 → 左转 → 前进 → 左转
+            return ActionGroup{
+                ActionType::FORWARD_1_STEP_ACTION,
+                ActionType::TURNLEFT_ACTION,
+                ActionType::FORWARD_1_STEP_ACTION,
+                ActionType::TURNLEFT_ACTION
+            };
+        }
+
+        // 普通：左转 → 前进 → 左转
+        return ActionGroup{
+            ActionType::TURNLEFT_ACTION,
+            ActionType::FORWARD_1_STEP_ACTION,
+            ActionType::TURNLEFT_ACTION
+        };
+    }
+};
+
 } // namespace adas

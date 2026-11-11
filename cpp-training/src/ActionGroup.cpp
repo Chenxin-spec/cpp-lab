@@ -102,4 +102,9 @@ void ActionGroup::DoOperate(PoseHandler& poseHandler) const noexcept
     });
 }
 
+ActionGroup::ActionGroup(std::initializer_list<ActionType> actions) noexcept
+    : actions(actions)
+{
+}
+
 }  // namespace adas

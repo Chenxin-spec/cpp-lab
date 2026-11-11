@@ -25,12 +25,15 @@ public:
     CmderList GetCmders(const std::string& commands) const noexcept;
 
 private:
+    std::string ParseCommandString(const std::string& commands) const noexcept;
+    void ReplaceAll(std::string& inout, const std::string& what, const std::string& with) const noexcept;
     const std::unordered_map<char, Cmder> cmderMap{
-        {'M', MoveCommand{}},
-        {'L', TurnLeftCommand{}},
-        {'R', TurnRightCommand{}},
-        {'F', FastCommand{}},
-        {'B', ReverseCommand{}}
+    {'M', MoveCommand{}},
+    {'L', TurnLeftCommand{}},
+    {'R', TurnRightCommand{}},
+    {'F', FastCommand{}},
+    {'B', ReverseCommand{}},
+    {'Z', TurnRoundCommand{}}   // TR 映射为 Z
     };
 };
 

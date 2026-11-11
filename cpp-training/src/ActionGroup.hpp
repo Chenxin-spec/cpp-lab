@@ -3,7 +3,7 @@
 #include <list>
 #include <cstdint>
 #include "PoseHandler.hpp"
-
+#include <initializer_list>
 namespace adas
 {
 
@@ -24,6 +24,8 @@ class ActionGroup final
 public:
     ActionGroup() = default;
     explicit ActionGroup(const std::list<ActionType>& actions) noexcept;
+    ActionGroup(std::initializer_list<ActionType> actions) noexcept;
+   
     ~ActionGroup() = default;
 
     void PushAction(const ActionType actionType) noexcept;
