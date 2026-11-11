@@ -18,7 +18,7 @@ void ExecutorImpl::Execute(const std::string& commands) noexcept
 
     std::for_each(cmders.begin(), cmders.end(),
                   [this](const Cmder& cmder) noexcept {
-                      cmder(poseHandler);
+                      cmder(poseHandler).DoOperate(poseHandler);
                   });
 }
 

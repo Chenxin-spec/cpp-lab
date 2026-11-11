@@ -22,6 +22,8 @@ public:
     Pose Query() const noexcept;
     void Reverse() noexcept;
     bool IsReverse() const noexcept;
+    void Forward() noexcept;
+    void Backward() noexcept;
 private:
     Pose pose;
     bool fast{false};

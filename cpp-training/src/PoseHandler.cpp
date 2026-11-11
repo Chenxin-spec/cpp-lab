@@ -33,6 +33,43 @@ void PoseHandler::Move() noexcept
     pose.y += dy;
 }
 
+void PoseHandler::Forward() noexcept
+{
+    int dx = 0;
+    int dy = 0;
+
+    if (pose.heading == 69)       // E
+        dx = 1;
+    else if (pose.heading == 249) // W
+        dx = -1;
+    else if (pose.heading == 0)   // N
+        dy = 1;
+    else if (pose.heading == 159) // S
+        dy = -1;
+
+    pose.x += dx;
+    pose.y += dy;
+}
+
+void PoseHandler::Backward() noexcept
+{
+    int dx = 0;
+    int dy = 0;
+
+    if (pose.heading == 69)       // E
+        dx = 1;
+    else if (pose.heading == 249) // W
+        dx = -1;
+    else if (pose.heading == 0)   // N
+        dy = 1;
+    else if (pose.heading == 159) // S
+        dy = -1;
+
+    // 后退 = 方向取反
+    pose.x -= dx;
+    pose.y -= dy;
+}
+
 void PoseHandler::TurnLeft() noexcept
 {
     if (IsReverse())

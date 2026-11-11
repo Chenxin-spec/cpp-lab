@@ -1,8 +1,7 @@
-// src/Command.hpp
 #pragma once
 
 #include "PoseHandler.hpp"
-#include <functional>
+#include "ActionGroup.hpp"
 
 namespace adas
 {
@@ -10,57 +9,102 @@ namespace adas
 class MoveCommand final
 {
 public:
-    void operator()(PoseHandler& poseHandler) const noexcept
+    ActionGroup operator()(PoseHandler& poseHandler) const noexcept
     {
+        ActionGroup actionGroup;
+
+        const ActionType action = poseHandler.IsReverse()
+                                      ? ActionType::BACKWARD_1_STEP_ACTION
+                                      : ActionType::FORWARD_1_STEP_ACTION;
+
         if (poseHandler.IsFast())
         {
-            poseHandler.Move();
+            actionGroup.PushAction(action);
         }
-        poseHandler.Move();
+        actionGroup.PushAction(action);
+
+        return actionGroup;
     }
 };
 
 class TurnLeftCommand final
 {
 public:
-    void operator()(PoseHandler& poseHandler) const noexcept
+    ActionGroup operator()(PoseHandler& poseHandler) const noexcept
     {
+        ActionGroup actionGroup;
+
+        // 加速时先移动一格
         if (poseHandler.IsFast())
         {
-            poseHandler.Move();
+            const ActionType moveAction = poseHandler.IsReverse()
+                                              ? ActionType::BACKWARD_1_STEP_ACTION
+                                              : ActionType::FORWARD_1_STEP_ACTION;
+            actionGroup.PushAction(moveAction);
         }
-        poseHandler.TurnLeft();
+
+        // 转向（倒车时左右互换）
+        if (poseHandler.IsReverse())
+        {
+            actionGroup.PushAction(ActionType::REVERSE_TURNLEFT_ACTION);
+        }
+        else
+        {
+            actionGroup.PushAction(ActionType::TURNLEFT_ACTION);
+        }
+
+        return actionGroup;
     }
 };
 
 class TurnRightCommand final
 {
 public:
-    void operator()(PoseHandler& poseHandler) const noexcept
+    ActionGroup operator()(PoseHandler& poseHandler) const noexcept
     {
+        ActionGroup actionGroup;
+
         if (poseHandler.IsFast())
         {
-            poseHandler.Move();
+            const ActionType moveAction = poseHandler.IsReverse()
+                                              ? ActionType::BACKWARD_1_STEP_ACTION
+                                              : ActionType::FORWARD_1_STEP_ACTION;
+            actionGroup.PushAction(moveAction);
         }
-        poseHandler.TurnRight();
+
+        if (poseHandler.IsReverse())
+        {
+            actionGroup.PushAction(ActionType::REVERSE_TURNRIGHT_ACTION);
+        }
+        else
+        {
+            actionGroup.PushAction(ActionType::TURNRIGHT_ACTION);
+        }
+
+        return actionGroup;
     }
 };
 
 class FastCommand final
 {
 public:
-    void operator()(PoseHandler& poseHandler) const noexcept
+    ActionGroup operator()(PoseHandler& /*poseHandler*/) const noexcept
     {
-        poseHandler.Fast();
+        ActionGroup actionGroup;
+        actionGroup.PushAction(ActionType::BE_FAST_ACTION);
+        return actionGroup;
     }
 };
 
 class ReverseCommand final
 {
 public:
-    void operator()(PoseHandler& poseHandler) const noexcept
+    ActionGroup operator()(PoseHandler& /*poseHandler*/) const noexcept
     {
-        poseHandler.Reverse();
+        ActionGroup actionGroup;
+        actionGroup.PushAction(ActionType::BE_REVERSE_ACTION);
+        return actionGroup;
     }
 };
+
 } // namespace adas

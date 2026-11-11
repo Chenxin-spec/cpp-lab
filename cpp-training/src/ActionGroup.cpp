@@ -1,0 +1,105 @@
+#include "ActionGroup.hpp"
+
+#include <algorithm>
+#include <functional>  // 必须加这个
+#include <vector>
+
+namespace adas
+{
+
+// 原子操作实现
+class ForwardAction final
+{
+public:
+    void operator()(PoseHandler& poseHandler) const noexcept
+    {
+        poseHandler.Forward();
+    }
+};
+
+class BackwardAction final
+{
+public:
+    void operator()(PoseHandler& poseHandler) const noexcept
+    {
+        poseHandler.Backward();
+    }
+};
+
+class TurnLeftAction final
+{
+public:
+    void operator()(PoseHandler& poseHandler) const noexcept
+    {
+        poseHandler.TurnLeft();
+    }
+};
+
+class ReverseTurnLeftAction final
+{
+public:
+    void operator()(PoseHandler& poseHandler) const noexcept
+    {
+        poseHandler.TurnRight();  // 倒车时的“左转”实际是右转
+    }
+};
+
+class TurnRightAction final
+{
+public:
+    void operator()(PoseHandler& poseHandler) const noexcept
+    {
+        poseHandler.TurnRight();
+    }
+};
+
+class ReverseTurnRightAction final
+{
+public:
+    void operator()(PoseHandler& poseHandler) const noexcept
+    {
+        poseHandler.TurnLeft();  // 倒车时的“右转”实际是左转
+    }
+};
+
+class BeFastAction final
+{
+public:
+    void operator()(PoseHandler& poseHandler) const noexcept
+    {
+        poseHandler.Fast();
+    }
+};
+
+class BeReverseAction final
+{
+public:
+    void operator()(PoseHandler& poseHandler) const noexcept
+    {
+        poseHandler.Reverse();
+    }
+};
+
+// ActionGroup 实现
+ActionGroup::ActionGroup(const std::list<ActionType>& actions) noexcept : actions(actions)
+{
+}
+
+void ActionGroup::PushAction(const ActionType actionType) noexcept
+{
+    actions.push_back(actionType);
+}
+
+void ActionGroup::DoOperate(PoseHandler& poseHandler) const noexcept
+{
+    static const std::vector<std::function<void(PoseHandler&)>> actionVec = {
+        ForwardAction{},   BackwardAction{},         TurnLeftAction{}, ReverseTurnLeftAction{},
+        TurnRightAction{}, ReverseTurnRightAction{}, BeFastAction{},   BeReverseAction{},
+    };
+
+    std::for_each(actions.begin(), actions.end(), [&poseHandler](const ActionType actionType) noexcept {
+        actionVec[static_cast<uint16_t>(actionType)](poseHandler);
+    });
+}
+
+}  // namespace adas
