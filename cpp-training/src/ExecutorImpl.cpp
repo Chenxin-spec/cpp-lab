@@ -8,8 +8,9 @@
 
 namespace adas
 {
-ExecutorImpl::ExecutorImpl(const Pose& pose) noexcept : poseHandler(pose)
+ExecutorImpl::ExecutorImpl(const Pose& pose, VehicleType type) noexcept : poseHandler(pose)
 {
+    poseHandler.SetVehicleType(type);
 }
 
 void ExecutorImpl::Execute(const std::string& commands) noexcept
@@ -31,6 +32,11 @@ Pose ExecutorImpl::Query() const noexcept
 std::unique_ptr<Executor> Executor::NewExecutor(const Pose& init_pose)
 {
     return std::make_unique<adas::ExecutorImpl>(init_pose);
+}
+
+std::unique_ptr<Executor> Executor::NewExecutor(const Pose& init_pose, VehicleType type)
+{
+    return std::make_unique<adas::ExecutorImpl>(init_pose, type);
 }
 
 std::unique_ptr<Executor> Executor::NewExecutor()

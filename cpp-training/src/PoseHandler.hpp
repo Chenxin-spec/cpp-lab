@@ -14,6 +14,8 @@ public:
     PoseHandler(const PoseHandler&) = delete;
     PoseHandler& operator=(const PoseHandler&) = delete;
 
+    void SetVehicleType(VehicleType type) noexcept { vehicleType = type; }
+    VehicleType GetVehicleType() const noexcept { return vehicleType; }
     void Move() noexcept;
     void TurnLeft() noexcept;
     void TurnRight() noexcept;
@@ -31,6 +33,7 @@ private:
     bool fast{false};
     bool reverse{false};
     // PoseHandler.hpp 的 private 区域增加
+    VehicleType vehicleType{VehicleType::Normal};
 };
 
 } // namespace adas

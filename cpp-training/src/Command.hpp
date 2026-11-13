@@ -12,16 +12,33 @@ public:
     ActionGroup operator()(PoseHandler& poseHandler) const noexcept
     {
         ActionGroup actionGroup;
+        const auto type = poseHandler.GetVehicleType();
+        const bool isReverse = poseHandler.IsReverse();
+        const bool isFast = poseHandler.IsFast();
 
-        const ActionType action = poseHandler.IsReverse()
-                                      ? ActionType::BACKWARD_1_STEP_ACTION
-                                      : ActionType::FORWARD_1_STEP_ACTION;
+        ActionType step = isReverse ? ActionType::BACKWARD_1_STEP_ACTION
+                                    : ActionType::FORWARD_1_STEP_ACTION;
 
-        if (poseHandler.IsFast())
+        if (type == VehicleType::SportsCar)
         {
-            actionGroup.PushAction(action);
+            // 跑车：一次移动 2 格（加速时 4 格）
+            int times = isFast ? 4 : 2;
+            for (int i = 0; i < times; ++i)
+                actionGroup.PushAction(step);
         }
-        actionGroup.PushAction(action);
+        else if (type == VehicleType::Bus)
+        {
+            // 公交车：一次移动 1 格（加速时 2 格）
+            int times = isFast ? 2 : 1;
+            for (int i = 0; i < times; ++i)
+                actionGroup.PushAction(step);
+        }
+        else
+        {
+            // 普通车：原来的逻辑
+            if (isFast) actionGroup.PushAction(step);
+            actionGroup.PushAction(step);
+        }
 
         return actionGroup;
     }
@@ -33,24 +50,37 @@ public:
     ActionGroup operator()(PoseHandler& poseHandler) const noexcept
     {
         ActionGroup actionGroup;
+        const auto type = poseHandler.GetVehicleType();
+        const bool isReverse = poseHandler.IsReverse();
+        const bool isFast = poseHandler.IsFast();
 
-        // 加速时先移动一格
-        if (poseHandler.IsFast())
+        ActionType moveAction = isReverse ? ActionType::BACKWARD_1_STEP_ACTION
+                                          : ActionType::FORWARD_1_STEP_ACTION;
+        ActionType turnAction = isReverse ? ActionType::REVERSE_TURNLEFT_ACTION
+                                          : ActionType::TURNLEFT_ACTION;
+
+        if (type == VehicleType::Bus)
         {
-            const ActionType moveAction = poseHandler.IsReverse()
-                                              ? ActionType::BACKWARD_1_STEP_ACTION
-                                              : ActionType::FORWARD_1_STEP_ACTION;
-            actionGroup.PushAction(moveAction);
+            // Bus: 先移动，再转向
+            int moveTimes = isFast ? 2 : 1;
+            for (int i = 0; i < moveTimes; ++i)
+                actionGroup.PushAction(moveAction);
+            actionGroup.PushAction(turnAction);
         }
-
-        // 转向（倒车时左右互换）
-        if (poseHandler.IsReverse())
+        else if (type == VehicleType::SportsCar)
         {
-            actionGroup.PushAction(ActionType::REVERSE_TURNLEFT_ACTION);
+            // 跑车: 先转向，再移动
+            actionGroup.PushAction(turnAction);
+            int moveTimes = isFast ? 2 : 1;
+            for (int i = 0; i < moveTimes; ++i)
+                actionGroup.PushAction(moveAction);
         }
         else
         {
-            actionGroup.PushAction(ActionType::TURNLEFT_ACTION);
+            // 普通车: 原来的逻辑（加速时先移动再转向）
+            if (isFast)
+                actionGroup.PushAction(moveAction);
+            actionGroup.PushAction(turnAction);
         }
 
         return actionGroup;
@@ -63,22 +93,37 @@ public:
     ActionGroup operator()(PoseHandler& poseHandler) const noexcept
     {
         ActionGroup actionGroup;
+        const auto type = poseHandler.GetVehicleType();
+        const bool isReverse = poseHandler.IsReverse();
+        const bool isFast = poseHandler.IsFast();
 
-        if (poseHandler.IsFast())
+        ActionType moveAction = isReverse ? ActionType::BACKWARD_1_STEP_ACTION
+                                          : ActionType::FORWARD_1_STEP_ACTION;
+        ActionType turnAction = isReverse ? ActionType::REVERSE_TURNRIGHT_ACTION
+                                          : ActionType::TURNRIGHT_ACTION;
+
+        if (type == VehicleType::Bus)
         {
-            const ActionType moveAction = poseHandler.IsReverse()
-                                              ? ActionType::BACKWARD_1_STEP_ACTION
-                                              : ActionType::FORWARD_1_STEP_ACTION;
-            actionGroup.PushAction(moveAction);
+            // Bus: 先移动，再转向
+            int moveTimes = isFast ? 2 : 1;
+            for (int i = 0; i < moveTimes; ++i)
+                actionGroup.PushAction(moveAction);
+            actionGroup.PushAction(turnAction);
         }
-
-        if (poseHandler.IsReverse())
+        else if (type == VehicleType::SportsCar)
         {
-            actionGroup.PushAction(ActionType::REVERSE_TURNRIGHT_ACTION);
+            // 跑车: 先转向，再移动
+            actionGroup.PushAction(turnAction);
+            int moveTimes = isFast ? 2 : 1;
+            for (int i = 0; i < moveTimes; ++i)
+                actionGroup.PushAction(moveAction);
         }
         else
         {
-            actionGroup.PushAction(ActionType::TURNRIGHT_ACTION);
+            // 普通车: 原来的逻辑
+            if (isFast)
+                actionGroup.PushAction(moveAction);
+            actionGroup.PushAction(turnAction);
         }
 
         return actionGroup;
